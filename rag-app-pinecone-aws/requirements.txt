@@ -1,0 +1,7 @@
+langchain
+langchain-community
+langchain-google-genai
+pinecone
+langchain-pinecone
+pypdf
+python-docx
