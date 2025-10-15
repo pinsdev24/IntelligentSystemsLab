@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Resources:
+  RagFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: lambda_package.zip
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.13
+      Timeout: 300
+      MemorySize: 512
+      Environment:
+        Variables:
+          BUCKET_NAME: rag-aws-bucket-pins
+          GOOGLE_API_KEY: !Ref GoogleApiKey
+          PINECONE_API_KEY: !Ref PineconeApiKey
+          PINECONE_INDEX_NAME: rag-aws-index
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /query
+            Method: post
+      Policies:
+        - AmazonS3ReadOnlyAccess
+Outputs:
+  ApiURL:
+    Description: "URL de l'API"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/query"
+Parameters:
+  GoogleApiKey:
+    Type: String
+    NoEcho: true
+  PineconeApiKey:
+    Type: String
+    NoEcho: true
