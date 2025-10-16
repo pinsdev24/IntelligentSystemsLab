@@ -3,7 +3,7 @@ import boto3
 from langchain_google_genai import ChatGoogleGenerativeAI 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader, TextLoader
+from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain_pinecone import PineconeVectorStore
 from langchain.chains import RetrievalQA
 import os
@@ -29,7 +29,7 @@ def load_documents_from_s3(bucket_name):
     try:
         response = s3.list_objects_v2(Bucket=bucket_name)
         for item in response.get('Contents', []):
-            if item['Key'].endswith(('.pdf', '.docx', '.txt')):
+            if item['Key'].endswith(('.pdf', '.txt')):
                 # Download the file from S3
                 s3_response = s3.get_object(Bucket=bucket_name, Key=item['Key'])
                 file_content = s3_response['Body'].read()
@@ -42,8 +42,6 @@ def load_documents_from_s3(bucket_name):
                 # Load the document using the appropriate loader
                 if item['Key'].endswith('.pdf'):
                     loader = PyPDFLoader(temp_file_path)
-                elif item['Key'].endswith('.docx'):
-                    loader = Docx2txtLoader(temp_file_path)
                 else:
                     loader = TextLoader(temp_file_path)
                 
